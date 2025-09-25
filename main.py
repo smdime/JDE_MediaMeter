@@ -19,7 +19,7 @@ class Task:
 
 class TaskManager:
     """Handles database operations for tasks"""
-    def __init__(self, user, password, host="localhost", db="task_manager"):
+     def __init__(self, user, password, host="localhost", db="task_manager"):
         try:
             self.conn = mysql.connector.connect(
                 host=host,
