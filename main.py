@@ -1,7 +1,7 @@
-import pymysql
+import mysql.connector
+from mysql.connector import Error
 import uuid
 from datetime import datetime
-
 class Task:
     """Represents a single task entity"""
     def __init__(self, task_id, title, description, due_date, priority, status, created_at):
@@ -19,15 +19,23 @@ class Task:
 
 class TaskManager:
     """Handles database operations for tasks"""
-    def __init__(self, host="localhost", user="root", password="password", db="task_manager"):
-        self.conn = pymysql.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=db,
-            cursorclass=pymysql.cursors.DictCursor
-        )
-        self.create_table()
+    def __init__(self, user, password, host="localhost", db="task_manager"):
+        try:
+            self.conn = mysql.connector.connect(
+                host=host,
+                user=user,
+                password=password,
+                database=db
+            )
+            self.cursor = self.conn.cursor(dictionary=True)
+        except Error as e:
+            print("Error connecting to MySQL:", e)
+            self.conn = None
+            self.cursor = None
+
+    def __del__(self):
+        if hasattr(self, 'conn') and self.conn and self.conn.is_connected():
+            self.conn.close()
 
     def create_table(self):
         """Create the tasks table if it doesn't exist"""
